@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/nicolau_flamel/bank-login-api/internal/scripts"
+	"github.com/nicolau_flamel/bank-login-api/internal/services"
 )
 
 func SetupDbUsers(db *sql.DB, addUsers bool) error {
@@ -44,7 +44,7 @@ func SetupDbUsers(db *sql.DB, addUsers bool) error {
 
 		var hashedDigits []string
 		for _, digit := range password {
-			hashedDigits = append(hashedDigits, scripts.HashDigit(string(digit), salt))
+			hashedDigits = append(hashedDigits, services.HashDigit(string(digit), salt))
 		}
 
 		digit1 := hashedDigits[0]
@@ -68,7 +68,7 @@ func SetupDbLayouts(db *sql.DB) {
 	_, err := db.Exec(`
     CREATE TABLE IF NOT EXISTS layouts (
         id SERIAL PRIMARY KEY,
-        layout JSONB NOT NULL,
+        layout TEXT NOT NULL,
         session_id TEXT,
         is_valid BOOLEAN,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

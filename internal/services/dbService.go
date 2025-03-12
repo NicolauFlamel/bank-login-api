@@ -2,8 +2,10 @@ package services
 
 import (
 	"database/sql"
-	"fmt"
+	"errors"
 	"log"
+
+	"github.com/nicolau_flamel/bank-login-api/internal/dtos"
 )
 
 func IsUniqueLayout(db *sql.DB, layout string) bool {
@@ -33,14 +35,32 @@ func InsertLayout(db *sql.DB, layout string, sessionId string, isValid bool) {
 }
 
 func GetLayoutBySessionID(db *sql.DB, sessionId string) (string, error) {
-	var layout string
+	var layout string 
 	query := "SELECT layout FROM layouts WHERE session_id = $1"
 	err := db.QueryRow(query, sessionId).Scan(&layout)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return "", fmt.Errorf("no layout found for session id %s", sessionId)
-		}
 		return "", err
 	}
+
 	return layout, nil
+}
+
+func GetValidSession(db *sql.DB, sessionId string) (dtos.Session, error) {
+	var session dtos.Session
+	query := "SELECT session_id, layout, is_valid, created_at FROM layouts WHERE session_id = $1"
+	err := db.QueryRow(query, sessionId).Scan(&session.Id, &session.Layout, &session.IsValid, &session.CreatedAt)
+	if err == sql.ErrNoRows {
+		return dtos.Session{}, errors.New("Session token is invalid")
+	}
+
+	if session.IsValid == true {
+		query := "UPDATE layouts SET is_valid = false WHERE session_id = $1;"
+		_, err := db.Exec(query ,sessionId)
+		if err != nil {
+			return dtos.Session{}, errors.New("Could not update session status")
+		}
+	} else {
+		return dtos.Session{}, errors.New("Session has been invalidated")
+	}
+	return session, err
 }

@@ -42,7 +42,8 @@ func (s *ApiServer) Run() error {
 
 	router := http.NewServeMux()
 
-  router.HandleFunc("GET /combination", handlers.CreateSessionHandler(db))
+  router.HandleFunc("GET /create-session", handlers.CreateSessionHandler(db))
+	router.HandleFunc("POST /validate", handlers.ValidationHandler(db))
 
 	server := http.Server{
 		Addr:    s.addr,

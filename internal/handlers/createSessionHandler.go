@@ -10,17 +10,23 @@ import (
 
 func CreateSessionHandler(db *sql.DB) func(w http.ResponseWriter, r *http.Request){
   return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+		
     sessionId, err :=  services.GenerateSessionID()
     if err != nil {
       http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
 		  return
     }
+
+		fmt.Println("first step done")
     
     layout, err := services.BuildLayout(db, sessionId)
     if err != nil {
       http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusInternalServerError)
 		  return
     }
+
+		fmt.Println("second done")
 
     encryptedLayout, err := services.EncryptLayoutAESGCM(layout)
 		if err != nil {

@@ -4,19 +4,19 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/nicolau_flamel/bank-login-api/internal/models"
+	"github.com/nicolau_flamel/bank-login-api/internal/dtos"
 )
 
-func GetUsers(db *sql.DB, user string) []models.User {
+func GetUsers(db *sql.DB) []dtos.User {
 	rows, err := db.Query("SELECT * FROM users")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
-	var users []models.User
+	var users []dtos.User
 	for rows.Next() {
-		var user models.User
+		var user dtos.User
 		err := rows.Scan(&user.Id, &user.Name, &user.Digit1, &user.Digit2, &user.Digit3, &user.Digit4, &user.Salt)
 		if err != nil {
 			log.Fatal(err)
