@@ -9,6 +9,7 @@ import (
 	"github.com/nicolau_flamel/bank-login-api/internal/services"
 )
 
+
 func SetupDbUsers(db *sql.DB, addUsers bool) error {
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (

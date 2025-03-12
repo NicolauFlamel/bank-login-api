@@ -25,6 +25,23 @@ func NewApiServer(addr string, db string) *ApiServer {
 	}
 }
 
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*") // Permite qualquer origem
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// Responder imediatamente a requisições OPTIONS
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+
 func (s *ApiServer) Run() error {
   db, err := sql.Open("postgres",os.Getenv("DBCONN"))
 	if err != nil {
@@ -32,7 +49,7 @@ func (s *ApiServer) Run() error {
 	}
 	defer db.Close()
 
-  SetupDbUsers(db, false)  
+  SetupDbUsers(db, true)  
 
   SetupDbLayouts(db)
 
@@ -47,7 +64,7 @@ func (s *ApiServer) Run() error {
 
 	server := http.Server{
 		Addr:    s.addr,
-		Handler: router,
+		Handler:  corsMiddleware(router),
 	}
 
 	fmt.Printf("Server has started on port %s", s.addr)
