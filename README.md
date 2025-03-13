@@ -31,4 +31,4 @@ This is an API for a bank authentication app.
 
 ## Problems
 
-Due to some sort of node and browser difference, we weren't able to decrypt the message on the frontend, therefore we did not implement it.
+Due to some sort of node and browser difference, we weren't able to decrypt the AES message on the frontend, therefore we did not implement it.
