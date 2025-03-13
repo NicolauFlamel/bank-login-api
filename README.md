@@ -1,3 +1,8 @@
+# Members
+
+Jéferson Alan Salomon
+Carlos Manoel Wendorff
+
 # Bank-Login-Api
 
 This is an API for a bank authentication app.
